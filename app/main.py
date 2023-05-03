@@ -1,14 +1,14 @@
-from fastapi import FastAPI, status, HTTPException, Depends
-from fastapi.params import Body
-from PIL import Image, ImageDraw, ImageFont
-from psycopg2.extras import RealDictCursor
 import os
 import requests
 import io
-import psycopg2
-import time
 import random
+import textwrap
 # import asyncio
+from fastapi import FastAPI, status, HTTPException, Depends, Request, File
+from fastapi.params import Body
+from fastapi.responses import Response, FileResponse
+from PIL import Image, ImageDraw, ImageFont
+from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from . import models, schemas
@@ -19,13 +19,24 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
+def image_to_byte_array(in_image) -> bytes:
+    imgByteArr = io.BytesIO()
+    in_image.save(imgByteArr, format="jpeg")
+    imgByteArr = imgByteArr.getvalue()
+    return imgByteArr
+
+
+async def parse_body(request: Request):
+    data: bytes = await request.body()
+    return data
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/meme_gen", status_code=status.HTTP_201_CREATED)
-async def memegen(payload: bytes = Body(...), db: Session = Depends(get_db)):
+@app.post("/meme_gen", status_code=status.HTTP_201_CREATED, response_class=Response)
+async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(get_db)):
     api_key = os.environ['IMAGGA_KEY']
     api_secret = os.environ['IMAGGA_SECRET']
 
@@ -34,24 +45,41 @@ async def memegen(payload: bytes = Body(...), db: Session = Depends(get_db)):
                              files={'image': payload})
 
     categories = schemas.Result.parse_obj(response.json()).result.tags
-
-    image = Image.open(io.BytesIO(payload))
-
     memes = db.query(models.Meme.meme_text).filter(and_(models.Meme.category.in_(categories),
                                                         models.Meme.rating >= 0)).all()
-    print(*memes)
+    if not memes:
+        to_send = Image.open('./app/lol.jpeg')
+        to_send.show()
+        return Response(content=image_to_byte_array(to_send), media_type="application/octet-stream")
+        #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"There is no category")
+
+    meme = random.choice(memes)[0].upper()
 
 
+    image = Image.open(io.BytesIO(payload))
+    draw = ImageDraw.Draw(image)
+    image_width, image_height = image.size
+    if image_width < image_height:
+        font_size = int(image_width/8)
+    else:
+        font_size = int(image_height/8)
 
+    myFont = ImageFont.truetype(font='Impact.ttf', size=font_size)
 
-    font_size = int(image.size[1]/8)
-    I1 = ImageDraw.Draw(image)
-    myFont = ImageFont.truetype('Arial.ttf', font_size)
-    I1.text((int(image.size[1]/2), 10), f"{image.size}", font=myFont, fill=(255, 255, 255))
-    I1.text((int(image.size[1]/2), int(image.size[1])-font_size-10), f"{random.choice(memes)}", font=myFont, fill=(255, 255, 255))
+    char_width, char_height = myFont.getsize('A')
+    chars_per_line = image_width//char_width
+    lines = textwrap.wrap(meme, width=chars_per_line)
+
+    y = 10
+    for line in lines:
+        line_width, line_height = myFont.getsize(line)
+        x = (image_width-line_width)//2
+        draw.text((x, y), line, fill='white', font=myFont)
+        y += line_height
+
     image.show()
 
-    return categories
+    return Response(content=image_to_byte_array(image), media_type="application/octet-stream")
 
 
 
