@@ -4,6 +4,7 @@ import io
 import random
 import textwrap
 # import asyncio
+
 from fastapi import FastAPI, status, HTTPException, Depends, Request, File
 from fastapi.params import Body
 from fastapi.responses import Response, FileResponse
@@ -13,6 +14,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from . import models, schemas
 from .database import engine, get_db
+from .settings import config
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -37,8 +39,8 @@ async def root():
 
 @app.post("/meme_gen", status_code=status.HTTP_201_CREATED, response_class=Response)
 async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(get_db)):
-    api_key = os.environ['IMAGGA_KEY']
-    api_secret = os.environ['IMAGGA_SECRET']
+    api_key = config.imagga_key.get_secret_value()
+    api_secret = config.imagga_secret.get_secret_value()
 
     response = requests.post('https://api.imagga.com/v2/tags',
                              auth=(api_key, api_secret),
@@ -49,7 +51,6 @@ async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(ge
                                                         models.Meme.rating >= 0)).all()
     if not memes:
         to_send = Image.open('./app/lol.jpeg')
-        to_send.show()
         return Response(content=image_to_byte_array(to_send), media_type="application/octet-stream")
         #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"There is no category")
 

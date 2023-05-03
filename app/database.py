@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
+from .settings import config
 
-db_host = os.environ['DB_HOST']
-db_name = os.environ['DB_NAME']
-db_user = os.environ['DB_USER']
-db_pass = os.environ['DB_PASS']
+db_host = config.db_host.get_secret_value()
+db_name = config.db_name.get_secret_value()
+db_user = config.db_user.get_secret_value()
+db_pass = config.db_pass.get_secret_value()
 
 
 SQLALCHEMY_DATABASE_URL = "postgresql://%s:%s@%s/%s" % (db_user, db_pass, db_host, db_name)
