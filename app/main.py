@@ -47,40 +47,54 @@ async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(ge
                              files={'image': payload})
 
     categories = schemas.Result.parse_obj(response.json()).result.tags
-    memes = db.query(models.Meme.meme_text).filter(and_(models.Meme.category.in_(categories),
-                                                        models.Meme.rating >= 0)).all()
+    memes = db.query(models.Meme.meme_text, models.Meme.id).filter(and_(models.Meme.category.in_(categories),
+                                                                        models.Meme.rating >= 0)).all()
     if not memes:
         to_send = Image.open('./app/lol.jpeg')
-        return Response(content=image_to_byte_array(to_send), media_type="application/octet-stream")
+        return Response(content=image_to_byte_array(to_send),
+                         media_type="application/octet-stream")
         #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"There is no category")
 
-    meme = random.choice(memes)[0].upper()
+    memeb = random.choice(memes)
+    meme = memeb[0].upper()
+    meme_id = str(memeb[1])
 
 
     image = Image.open(io.BytesIO(payload))
     draw = ImageDraw.Draw(image)
     image_width, image_height = image.size
     if image_width < image_height:
-        font_size = int(image_width/8)
+        font_size = int(image_width/10)
     else:
-        font_size = int(image_height/8)
+        font_size = int(image_height/10)
 
     myFont = ImageFont.truetype(font='Impact.ttf', size=font_size)
 
     char_width, char_height = myFont.getsize('A')
     chars_per_line = image_width//char_width
     lines = textwrap.wrap(meme, width=chars_per_line)
-
-    y = 10
-    for line in lines:
-        line_width, line_height = myFont.getsize(line)
+    if len(lines) == 1:
+        line_width, line_height = myFont.getsize(lines[0])
+        y = image_height - line_height - 10
         x = (image_width-line_width)//2
-        draw.text((x, y), line, fill='white', font=myFont)
-        y += line_height
+        draw.text((x, y), lines[0], fill='white', font=myFont)
+    else:
+        y = 10
+        line_width, line_height = myFont.getsize(lines[0])
+        x = (image_width-line_width)//2
+        draw.text((x, y), lines[0], fill='white', font=myFont)
+        y = image_height - (len(lines)-1) * char_height - 10
+        for line in lines[1:]:
+            line_width, line_height = myFont.getsize(line)
+            x = (image_width-line_width)//2
+            draw.text((x, y), line, fill='white', font=myFont)
+            y += line_height
 
     image.show()
-
-    return Response(content=image_to_byte_array(image), media_type="application/octet-stream")
+    header = {"X-Meme-id": meme_id}
+    return Response(content=image_to_byte_array(image),
+                    media_type="application/octet-stream",
+                    headers=header)
 
 
 
@@ -107,8 +121,27 @@ async def find(category: str, db: Session = Depends(get_db)):
     return memes
 
 
+@app.get("/meme_by_id")
+async def meme_by_id(id: int, db: Session = Depends(get_db)):
+    memes = db.query(models.Meme).filter(models.Meme.id == id).first()
+    if not memes:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"There is no meme with id {id}")
+    return memes
+
 @app.get("/test_sql")
 async def test_sql(db: Session = Depends(get_db)):
     print("SOME")
     memes = db.query(models.Meme).all()
     return {"data": memes}
+
+
+@app.put("/rate_meme")
+async def rate_meme(id: int, user_rate: int, db: Session = Depends(get_db)):
+    meme_query = db.query(models.Meme).filter(models.Meme.id == id)
+    meme_inf = meme_query.first()
+    rating, num_of_grades = meme_inf.rating, meme_inf.num_of_grades
+    new_rating = int(((rating*num_of_grades)+user_rate)/(num_of_grades+1))
+    meme_query.update({'rating': new_rating, 'num_of_grades': num_of_grades+1}, synchronize_session=False)
+    db.commit()
+    return new_rating

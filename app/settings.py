@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     db_pass: SecretStr
 
     class Config:
-        env_file = '.env'
+        env_file = './app/cw.env'
         env_file_encoding = 'utf-8'
 
 
