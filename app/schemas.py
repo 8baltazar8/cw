@@ -12,7 +12,19 @@ class Meme(BaseModel):
         assert re.match(r"^[a-zA-Z]+$", category), "Category should consist of lowercase letters, should be a word"
         return category.lower()
 
-#________________________________
+
+class Post_Meme(Meme):
+    id: int
+    meme_text: str
+    category: str
+
+    class Config:
+        orm_mode = True
+
+class Meme_by_category(BaseModel):
+    memes: List[Post_Meme]
+# ________________________________
+
 
 class Guesed_category(BaseModel):
     en: str
