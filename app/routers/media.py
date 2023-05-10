@@ -4,7 +4,7 @@ import io
 import random
 import textwrap
 # import asyncio
-
+import base64
 from fastapi import FastAPI, status, HTTPException, Depends, Request, File, APIRouter
 from fastapi.params import Body
 from fastapi.responses import Response, FileResponse
@@ -24,7 +24,7 @@ async def parse_body(request: Request):
     data: bytes = await request.body()
     return data
 
-@router.post("/meme_gen", status_code=status.HTTP_201_CREATED, response_class=Response)
+@router.post("/meme_gen", status_code=status.HTTP_201_CREATED, response_model=schemas.Meme_generated)
 async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(get_db)):
     api_key = config.imagga_key.get_secret_value()
     api_secret = config.imagga_secret.get_secret_value()
@@ -38,18 +38,14 @@ async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(ge
                                                                         models.Meme.rating >= 0)).all()
     if not memes:
         to_send = Image.open('./app/routers/lol.jpeg')
-        return Response(content=utils.image_to_byte_array(to_send),
-                        media_type="application/octet-stream",
-                        headers={"X-Meme-id": '666'})
+        fin = {'id': '404', 'content': base64.b64encode(utils.image_to_byte_array(to_send)).decode('utf-8')}
+        return fin
         #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"There is no category")
 
     memeb = random.choice(memes)
     meme = memeb[0].upper()
     meme_id = str(memeb[1])
 
-    pic_to_out = utils.pic_gen(payload=payload, meme=meme)
+    fin = {'id': meme_id, 'content': base64.b64encode(utils.pic_gen(payload=payload, meme=meme)).decode('utf-8')}
 
-    header = {"X-Meme-id": meme_id}
-    return Response(content=pic_to_out,
-                    media_type="application/octet-stream",
-                    headers=header)
+    return fin

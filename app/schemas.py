@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ValidationError, validator, Field
-from typing import Optional, List
+from typing import Optional, List, IO
+
 import re
 
 
@@ -49,3 +50,8 @@ class Tags(BaseModel):
 
 class Result(BaseModel):
     result: Tags
+
+
+class Meme_generated(BaseModel):
+    id: int
+    content: bytes
