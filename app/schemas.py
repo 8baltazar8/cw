@@ -55,3 +55,8 @@ class Result(BaseModel):
 class Meme_generated(BaseModel):
     id: int
     content: bytes
+
+
+class User_rate(BaseModel):
+    id: int
+    grade: int

@@ -56,11 +56,21 @@ async def test_sql(db: Session = Depends(get_db)):
 
 
 @router.put("/rate_meme")
-async def rate_meme(id: int, user_rate: int, db: Session = Depends(get_db)):
-    meme_query = db.query(models.Meme).filter(models.Meme.id == id)
+async def rate_meme(user_rate: schemas.User_rate, db: Session = Depends(get_db)):
+    meme_query = db.query(models.Meme).filter(models.Meme.id == user_rate.id)
     meme_inf = meme_query.first()
+    if not meme_inf:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"There is no memes with id {user_rate.id}")
+
     rating, num_of_grades = meme_inf.rating, meme_inf.num_of_grades
-    new_rating = int(((rating*num_of_grades)+user_rate)/(num_of_grades+1))
+    new_rating = round(((rating*num_of_grades)+user_rate.grade)/(num_of_grades+1), 3)
     meme_query.update({'rating': new_rating, 'num_of_grades': num_of_grades+1}, synchronize_session=False)
     db.commit()
-    return new_rating
+
+    meme_del_query = db.query(models.Meme).filter(and_(models.Meme.rating < 1.5, models.Meme.num_of_grades > 50))
+
+    if meme_del_query.first():
+        meme_del_query.delete(synchronize_session=False)
+        db.commit()
+    return meme_query.first()
