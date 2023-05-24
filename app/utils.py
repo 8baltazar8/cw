@@ -30,16 +30,16 @@ def pic_gen(payload, meme):
         line_width, line_height = myFont.getsize(lines[0])
         y = image_height - line_height - 10
         x = (image_width-line_width)//2
-        draw.text((x, y), lines[0], fill='white', font=myFont)
+        draw.text((x, y), lines[0], fill='white', font=myFont, stroke_width=2 , stroke_fill=(0, 0, 0))
     else:
         y = 10
         line_width, line_height = myFont.getsize(lines[0])
         x = (image_width-line_width)//2
-        draw.text((x, y), lines[0], fill='white', font=myFont)
+        draw.text((x, y), lines[0], fill='white', font=myFont, stroke_width=2 , stroke_fill=(0, 0, 0))
         y = image_height - (len(lines)-1) * char_height - 10
         for line in lines[1:]:
             line_width, line_height = myFont.getsize(line)
             x = (image_width-line_width)//2
-            draw.text((x, y), line, fill='white', font=myFont)
+            draw.text((x, y), line, fill='white', font=myFont, stroke_width=2 , stroke_fill=(0, 0, 0))
             y += line_height
     return image_to_byte_array(image)

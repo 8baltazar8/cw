@@ -34,6 +34,7 @@ async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(ge
                              files={'image': payload})
 
     categories = schemas.Result.parse_obj(response.json()).result.tags
+    #print(categories)
     memes = db.query(models.Meme.meme_text, models.Meme.id).filter(and_(models.Meme.category.in_(categories),
                                                                         models.Meme.rating >= 0)).all()
     if not memes:

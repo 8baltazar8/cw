@@ -43,7 +43,7 @@ class Tags(BaseModel):
     def confidence_hun(cls, tags):
         out_list = []
         for tag in tags:
-            if tag.confidence >= 70.0 and re.match(r"^[a-z]+$", tag.tag.en):
+            if tag.confidence >= 40.0 and re.match(r"^[a-z]+$", tag.tag.en):
                 out_list.append(tag.tag.en)
         return out_list
 
