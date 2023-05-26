@@ -1,20 +1,10 @@
-import os
-import requests
-import io
-import random
-import textwrap
-# import asyncio
-
-from fastapi import FastAPI, status, HTTPException, Depends, APIRouter
-from fastapi.params import Body
-from fastapi.responses import Response, FileResponse
-from psycopg2.extras import RealDictCursor
+from fastapi import status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import List
-from .. import models, schemas, utils
-from ..database import engine, get_db
-from ..settings import config
+from .. import models, schemas
+from ..database import get_db
+
 
 router = APIRouter(
     tags=['Meme texts']

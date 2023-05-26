@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ValidationError, validator, Field
-from typing import Optional, List, IO
+from typing import Optional, List, IO, Any
 
 import re
 
@@ -22,6 +22,7 @@ class Post_Meme(Meme):
     class Config:
         orm_mode = True
 
+
 class Meme_by_category(BaseModel):
     memes: List[Post_Meme]
 # ________________________________
@@ -43,7 +44,7 @@ class Tags(BaseModel):
     def confidence_hun(cls, tags):
         out_list = []
         for tag in tags:
-            if tag.confidence >= 40.0 and re.match(r"^[a-z]+$", tag.tag.en):
+            if tag.confidence >= 35.0 and re.match(r"^[a-z]+$", tag.tag.en):
                 out_list.append(tag.tag.en)
         return out_list
 
@@ -55,8 +56,18 @@ class Result(BaseModel):
 class Meme_generated(BaseModel):
     id: int
     content: bytes
+    categories: Optional[List[str]]
 
 
 class User_rate(BaseModel):
     id: int
     grade: int
+
+
+class Dem_generated(BaseModel):
+    content: bytes
+
+
+class Dem_in(BaseModel):
+    text: str
+    payload: Any
