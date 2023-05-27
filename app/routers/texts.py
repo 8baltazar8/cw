@@ -1,4 +1,4 @@
-from fastapi import status, HTTPException, Depends, APIRouter
+from fastapi import status, HTTPException, Depends, APIRouter, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import List
@@ -64,3 +64,15 @@ async def rate_meme(user_rate: schemas.User_rate, db: Session = Depends(get_db))
         meme_del_query.delete(synchronize_session=False)
         db.commit()
     return meme_query.first()
+
+
+@router.delete("/delete_meme_by_id", status_code=status.HTTP_204_NO_CONTENT)
+async def del_meme(id: int, db: Session = Depends(get_db)):
+    meme_del_query = db.query(models.Meme).filter(models.Meme.id == id)
+    meme_to_del = meme_del_query.first()
+    if not meme_to_del:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"There is no memes with id {id}")
+    meme_del_query.delete(synchronize_session=False)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
