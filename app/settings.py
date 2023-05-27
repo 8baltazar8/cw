@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     db_user: SecretStr
     db_name: SecretStr
     db_pass: SecretStr
+    db_port: SecretStr
 
     class Config:
         env_file = './app/cw.env'

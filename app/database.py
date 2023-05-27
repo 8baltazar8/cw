@@ -7,9 +7,9 @@ db_host = config.db_host.get_secret_value()
 db_name = config.db_name.get_secret_value()
 db_user = config.db_user.get_secret_value()
 db_pass = config.db_pass.get_secret_value()
+db_port = config.db_port.get_secret_value()
 
-
-SQLALCHEMY_DATABASE_URL = "postgresql://%s:%s@%s/%s" % (db_user, db_pass, db_host, db_name)
+SQLALCHEMY_DATABASE_URL = "postgresql://%s:%s@%s:%s/%s" % (db_user, db_pass, db_host, db_port, db_name)
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
 engine = create_engine(
