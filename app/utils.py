@@ -19,7 +19,7 @@ def pic_gen(payload, meme):
     else:
         font_size = int(image_height/10)
 
-    myFont = ImageFont.truetype(font='Impact.ttf', size=font_size)
+    myFont = ImageFont.truetype(font='./app/fonts/impact.ttf', size=font_size)
 
     char_width, char_height = myFont.getsize('A')
     chars_per_line = image_width//char_width
@@ -69,7 +69,7 @@ def dem_gen(payload, meme_text):
     #meme_image.show()
     draw = ImageDraw.Draw(meme_image)
 
-    font_path = "Impact.ttf"
+    font_path = './app/fonts/impact.ttf'
     title_font = ImageFont.truetype(font_path, 60)
     subtitle_font = ImageFont.truetype(font_path, 40)
 
