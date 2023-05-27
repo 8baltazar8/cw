@@ -70,4 +70,8 @@ class Dem_generated(BaseModel):
 
 class Dem_in(BaseModel):
     text: str
-    payload: Any
+    payload: bytes
+
+
+class Meme_in(BaseModel):
+    payload: bytes

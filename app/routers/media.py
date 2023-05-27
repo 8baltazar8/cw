@@ -20,13 +20,13 @@ async def parse_body(request: Request):
 
 
 @router.post("/meme_gen", status_code=status.HTTP_201_CREATED, response_model=schemas.Meme_generated)
-async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(get_db)):
+async def memegen(payload: schemas.Meme_in, db: Session = Depends(get_db)):
     api_key = config.imagga_key.get_secret_value()
     api_secret = config.imagga_secret.get_secret_value()
 
     response = requests.post('https://api.imagga.com/v2/tags',
                              auth=(api_key, api_secret),
-                             files={'image': payload})
+                             files={'image': base64.b64decode(payload.payload)})
 
     categories = schemas.Result.parse_obj(response.json()).result.tags
     memes = db.query(models.Meme.meme_text, models.Meme.id).filter(and_(models.Meme.category.in_(categories),
@@ -44,7 +44,7 @@ async def memegen(payload: bytes = Depends(parse_body), db: Session = Depends(ge
     meme_id = str(memeb[1])
 
     fin = {'id': meme_id,
-           'content': base64.b64encode(utils.pic_gen(payload=payload, meme=meme)).decode('utf-8'),
+           'content': base64.b64encode(utils.pic_gen(payload=base64.b64decode(payload.payload), meme=meme)).decode('utf-8'),
            'categories': categories}
 
     return fin
