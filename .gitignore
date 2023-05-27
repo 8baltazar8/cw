@@ -1,0 +1,9 @@
+venv/
+*.env
+__pycache__/
+*.jpeg
+!lol.jpeg
+*.webp
+__init__.py
+.DS_Store
+test.py

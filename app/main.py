@@ -23,4 +23,4 @@ app.include_router(texts.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Generate MEMES"}
