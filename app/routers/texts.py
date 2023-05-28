@@ -41,6 +41,9 @@ async def meme_by_id(id: int, db: Session = Depends(get_db)):
 @router.get("/random_meme", response_model=schemas.Random_meme)
 async def test_sql(db: Session = Depends(get_db)):
     memes = db.query(models.Meme.meme_text).order_by(desc(models.Meme.id)).limit(100).all()
+    if not memes:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="There is no memes yet")
     memes = [x[0] for x in memes]
     meme = random.choice(memes)
     return {'meme_text': meme}
