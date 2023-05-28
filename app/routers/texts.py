@@ -1,10 +1,10 @@
 from fastapi import status, HTTPException, Depends, APIRouter, Response
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
 from typing import List
 from .. import models, schemas
 from ..database import get_db
-
+import random
 
 router = APIRouter(
     tags=['Meme texts']
@@ -38,11 +38,12 @@ async def meme_by_id(id: int, db: Session = Depends(get_db)):
     return memes
 
 
-@router.get("/test_sql")
+@router.get("/random_meme", response_model=schemas.Random_meme)
 async def test_sql(db: Session = Depends(get_db)):
-    print("SOME")
-    memes = db.query(models.Meme).all()
-    return {"data": memes}
+    memes = db.query(models.Meme.meme_text).order_by(desc(models.Meme.id)).limit(100).all()
+    memes = [x[0] for x in memes]
+    meme = random.choice(memes)
+    return {'meme_text': meme}
 
 
 @router.put("/rate_meme")

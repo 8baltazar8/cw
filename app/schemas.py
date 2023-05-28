@@ -75,3 +75,7 @@ class Dem_in(BaseModel):
 
 class Meme_in(BaseModel):
     payload: bytes
+
+
+class Random_meme(BaseModel):
+    meme_text: str
