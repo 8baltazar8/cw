@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  api:
+    image: 8baltazar8/memeinator-api
+    depends_on:
+      - postgres
+    ports:
+      - 80:4000
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 4000
+    # env_file:
+    #   - ./app/cw.env
+    environment:
+      - IMAGGA_KEY=${IMAGGA_KEY}
+      - IMAGGA_SECRET=${IMAGGA_SECRET}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+volumes:
+  postgres-db:

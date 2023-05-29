@@ -7,3 +7,4 @@ __pycache__/
 __init__.py
 .DS_Store
 test.py
+docker-compose-dev.yml
