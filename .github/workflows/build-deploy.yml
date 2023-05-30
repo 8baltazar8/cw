@@ -9,7 +9,7 @@ jobs:
     env:
       IMAGGA_KEY: ${{secrets.IMAGGA_KEY}}
       IMAGGA_SECRET: ${{secrets.IMAGGA_SECRET}}
-      DB_HOST: postgres
+      DB_HOST: ${{secrets.DB_HOST}}
       DB_NAME: ${{secrets.DB_NAME}}
       DB_USER: ${{secrets.DB_USER}}
       DB_PASS: ${{secrets.DB_PASS}}
@@ -21,7 +21,7 @@ jobs:
           POSTGRES_PASSWORD: ${{secrets.DB_PASS}}
           POSTGRES_USER: ${{secrets.DB_USER}}
           POSTGRES_DB: ${{secrets.DB_NAME}}_test
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: ${{secrets.DB_HOST}}
         ports:
           - 5432:5432
         options: >-
