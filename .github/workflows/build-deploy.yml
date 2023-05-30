@@ -44,7 +44,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: pytest
         run: |
-          alembic downgrade ab0fc233c89f
-          alembic upgrade ab0fc233c89f
+          alembic revision --autogenerate
+          alembic upgrade head
           pip install pytest
           pytest
