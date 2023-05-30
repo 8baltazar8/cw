@@ -29,5 +29,6 @@ jobs:
       - name: pytest
         run: |
           pip install pytest
+          cd cw
           pytest tests/test_texts.py
           pytest tests/test_media.py
