@@ -63,6 +63,11 @@ class User_rate(BaseModel):
     id: int
     grade: int
 
+    @validator('grade')
+    def category_must_be_lowercasealpha(cls, grade):
+        assert 1 <= grade <= 10, "Grade should be from 1 to 10"
+        return grade
+
 
 class Dem_generated(BaseModel):
     content: bytes

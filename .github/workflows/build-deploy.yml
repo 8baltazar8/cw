@@ -1,0 +1,14 @@
+name: build and deploy memeinator code
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  memeinator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pulling git repository
+        uses: actions/checkout@v2
+      - name: testing run
+        run: echo "TEST HIHI HUHUH"
