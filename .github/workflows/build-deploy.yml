@@ -7,13 +7,13 @@ on:
 jobs:
   memeinator:
     env:
-      IMAGGA_KEY: ${IMAGGA_KEY}
-      IMAGGA_SECRET: ${IMAGGA_SECRET}
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_PORT: ${DB_PORT}
+      IMAGGA_KEY: ${{secrets.IMAGGA_KEY}}
+      IMAGGA_SECRET: ${{secrets.IMAGGA_SECRET}}
+      DB_HOST: ${{secrets.DB_HOST}}
+      DB_NAME: ${{secrets.DB_NAME}}
+      DB_USER: ${{secrets.DB_USER}}
+      DB_PASS: ${{secrets.DB_PASS}}
+      DB_PORT: ${{secrets.DB_PORT}}
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repository
