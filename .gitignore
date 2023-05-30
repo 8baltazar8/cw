@@ -3,6 +3,7 @@ venv/
 __pycache__/
 *.jpeg
 !lol.jpeg
+!t_pic.jpeg
 *.webp
 .DS_Store
 test.py
