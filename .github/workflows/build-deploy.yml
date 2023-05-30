@@ -29,6 +29,4 @@ jobs:
       - name: pytest
         run: |
           pip install pytest
-          cd ..
-          cd cw
           pytest
