@@ -7,13 +7,13 @@ on:
 jobs:
   memeinator:
     env:
-      IMAGGA_KEY: acc_69f61c59ee6cecd
-      IMAGGA_SECRET: f948b6725ec1ac38f771b1ae383a3f78
-      DB_HOST: localhost
-      DB_NAME: meme
-      DB_USER: postgres
-      DB_PASS: baltazarpost7623g
-      DB_PORT: 5432
+      IMAGGA_KEY: ${IMAGGA_KEY}
+      IMAGGA_SECRET: ${IMAGGA_SECRET}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT}
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repository
