@@ -71,7 +71,6 @@ jobs:
       - name: pulling git repository
         uses: actions/checkout@v3
       - name: deploy to heroku
-        uses: actions/checkout@v2
         uses: akhileshns/heroku-deploy@v3.12.14 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
