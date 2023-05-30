@@ -9,3 +9,4 @@ __init__.py
 test.py
 docker-compose-dev.yml
 random_shit.py
+build-deploy.yml
