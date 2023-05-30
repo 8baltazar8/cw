@@ -30,5 +30,4 @@ jobs:
         run: |
           pip install pytest
           cd ..
-          pytest tests/test_texts.py
-          pytest tests/test_media.py
+          pytest
